@@ -1,0 +1,18 @@
+- [Home](/)
+- [Getting Started](getting-started.md)
+- [Architecture](architecture.md)
+- **Abstractions**
+  - [Overview](abstractions/README.md)
+  - [Entities](abstractions/entities.md)
+  - [Interfaces](abstractions/interfaces.md)
+  - [DTOs](abstractions/dtos.md)
+  - [Enums](abstractions/enums.md)
+- **Core**
+  - [Overview](core/README.md)
+  - [HTTP Client](core/http-client.md)
+  - [Clients](core/clients.md)
+  - [Services](core/services.md)
+  - [Dependency Injection](core/di.md)
+- [API Reference](api-reference.md)
+- [Contributing](contributing.md)
+- [Changelog](changelog.md)

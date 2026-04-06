@@ -1,0 +1,15 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+    <PackageId>Joaoaalves.Tiny.Abstractions</PackageId>
+    <Authors>Joaoaalves</Authors>
+    <Description>Abstractions (entities, interfaces, enums, DTOs) for the Tiny ERP API V2 client library.</Description>
+    <PackageTags>tiny;erp;brazil;api</PackageTags>
+    <RepositoryUrl>https://github.com/Joaoaalves/tiny-cs</RepositoryUrl>
+  </PropertyGroup>
+
+</Project>
