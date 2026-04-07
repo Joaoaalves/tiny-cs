@@ -13,9 +13,9 @@ namespace Joaoaalves.Tiny.Core.Services;
 /// </summary>
 internal sealed class TinyOrderService : ITinyOrderService
 {
-    private readonly TinyOrderClient _client;
+    private readonly ITinyOrderClient _client;
 
-    public TinyOrderService(TinyOrderClient client) => _client = client;
+    public TinyOrderService(ITinyOrderClient client) => _client = client;
 
     /// <inheritdoc />
     public async Task<Order?> GetByIdAsync(long id, CancellationToken cancellationToken = default)

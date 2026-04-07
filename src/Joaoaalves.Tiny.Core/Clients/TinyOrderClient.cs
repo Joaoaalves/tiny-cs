@@ -9,21 +9,21 @@ namespace Joaoaalves.Tiny.Core.Clients;
 /// Typed client for the Tiny order endpoints.
 /// Handles URL parameter construction for search and retrieval.
 /// </summary>
-internal sealed class TinyOrderClient
+internal sealed class TinyOrderClient : ITinyOrderClient
 {
     private readonly TinyHttpClient _http;
 
     public TinyOrderClient(TinyHttpClient http) => _http = http;
 
     /// <summary>Calls <c>pedido.obter.php</c> with the given order ID.</summary>
-    internal Task<TinyGetOrderResponse> GetByIdAsync(long id, CancellationToken ct)
+    public Task<TinyGetOrderResponse> GetByIdAsync(long id, CancellationToken ct)
         => _http.PostAsync<TinyGetOrderResponse>(
             "pedido.obter.php",
             [new("id", id.ToString())],
             ct);
 
     /// <summary>Calls <c>pedidos.pesquisa.php</c> with the given search filters.</summary>
-    internal Task<TinySearchOrdersResponse> SearchAsync(SearchOrdersRequest request, CancellationToken ct)
+    public Task<TinySearchOrdersResponse> SearchAsync(SearchOrdersRequest request, CancellationToken ct)
     {
         var parameters = new List<KeyValuePair<string, string?>>();
 

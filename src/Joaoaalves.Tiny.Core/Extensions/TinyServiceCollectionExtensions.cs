@@ -47,9 +47,9 @@ public static class TinyServiceCollectionExtensions
             http.BaseAddress = options.BaseAddress;
         });
 
-        services.AddTransient<TinyProductClient>();
-        services.AddTransient<TinyOrderClient>();
-        services.AddTransient<TinyStockClient>();
+        services.AddTransient<ITinyProductClient, TinyProductClient>();
+        services.AddTransient<ITinyOrderClient, TinyOrderClient>();
+        services.AddTransient<ITinyStockClient, TinyStockClient>();
 
         services.AddTransient<ITinyProductService, TinyProductService>();
         services.AddTransient<ITinyOrderService, TinyOrderService>();

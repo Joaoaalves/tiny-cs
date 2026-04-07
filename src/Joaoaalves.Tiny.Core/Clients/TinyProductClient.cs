@@ -11,21 +11,21 @@ namespace Joaoaalves.Tiny.Core.Clients;
 /// Typed client for the Tiny product endpoints.
 /// Handles URL parameter construction and JSON serialization of request payloads.
 /// </summary>
-internal sealed class TinyProductClient
+internal sealed class TinyProductClient : ITinyProductClient
 {
     private readonly TinyHttpClient _http;
 
     public TinyProductClient(TinyHttpClient http) => _http = http;
 
     /// <summary>Calls <c>produto.obter.php</c> with the given product ID.</summary>
-    internal Task<TinyGetProductResponse> GetByIdAsync(long id, CancellationToken ct)
+    public Task<TinyGetProductResponse> GetByIdAsync(long id, CancellationToken ct)
         => _http.PostAsync<TinyGetProductResponse>(
             "produto.obter.php",
             [new("id", id.ToString())],
             ct);
 
     /// <summary>Calls <c>produtos.pesquisa.php</c> with the given search filters.</summary>
-    internal Task<TinySearchProductsResponse> SearchAsync(SearchProductsRequest request, CancellationToken ct)
+    public Task<TinySearchProductsResponse> SearchAsync(SearchProductsRequest request, CancellationToken ct)
     {
         var parameters = new List<KeyValuePair<string, string?>>();
 
@@ -41,14 +41,14 @@ internal sealed class TinyProductClient
     }
 
     /// <summary>Calls <c>produto.incluir.php</c> with a batch of products to create.</summary>
-    internal Task<TinyUpsertResponse> CreateAsync(IEnumerable<UpsertProductData> products, CancellationToken ct)
+    public Task<TinyUpsertResponse> CreateAsync(IEnumerable<UpsertProductData> products, CancellationToken ct)
         => _http.PostAsync<TinyUpsertResponse>(
             "produto.incluir.php",
             [new("produto", SerializeUpsertRequest(products))],
             ct);
 
     /// <summary>Calls <c>produto.alterar.php</c> with a batch of products to update.</summary>
-    internal Task<TinyUpsertResponse> UpdateAsync(IEnumerable<UpsertProductData> products, CancellationToken ct)
+    public Task<TinyUpsertResponse> UpdateAsync(IEnumerable<UpsertProductData> products, CancellationToken ct)
         => _http.PostAsync<TinyUpsertResponse>(
             "produto.alterar.php",
             [new("produto", SerializeUpsertRequest(products))],

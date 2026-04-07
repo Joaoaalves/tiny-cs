@@ -13,9 +13,9 @@ namespace Joaoaalves.Tiny.Core.Services;
 /// </summary>
 internal sealed class TinyProductService : ITinyProductService
 {
-    private readonly TinyProductClient _client;
+    private readonly ITinyProductClient _client;
 
-    public TinyProductService(TinyProductClient client) => _client = client;
+    public TinyProductService(ITinyProductClient client) => _client = client;
 
     /// <inheritdoc />
     public async Task<Product?> GetByIdAsync(long id, CancellationToken cancellationToken = default)

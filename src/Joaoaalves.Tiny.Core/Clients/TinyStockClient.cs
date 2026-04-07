@@ -9,14 +9,14 @@ namespace Joaoaalves.Tiny.Core.Clients;
 /// <summary>
 /// Typed client for the Tiny stock endpoints.
 /// </summary>
-internal sealed class TinyStockClient
+internal sealed class TinyStockClient : ITinyStockClient
 {
     private readonly TinyHttpClient _http;
 
     public TinyStockClient(TinyHttpClient http) => _http = http;
 
     /// <summary>Calls <c>produto.obter.estoque.php</c> for the given product ID.</summary>
-    internal Task<TinyGetProductStockResponse> GetByProductIdAsync(long productId, CancellationToken ct)
+    public Task<TinyGetProductStockResponse> GetByProductIdAsync(long productId, CancellationToken ct)
         => _http.PostAsync<TinyGetProductStockResponse>(
             "produto.obter.estoque.php",
             [new("id", productId.ToString())],
@@ -26,7 +26,7 @@ internal sealed class TinyStockClient
     /// Calls <c>produto.atualizarestoque.php</c>.
     /// The movement data is serialised to JSON and sent as the <c>estoque</c> query parameter.
     /// </summary>
-    internal Task<TinyUpdateStockResponse> UpdateAsync(UpdateStockData data, CancellationToken ct)
+    public Task<TinyUpdateStockResponse> UpdateAsync(UpdateStockData data, CancellationToken ct)
     {
         var json = JsonSerializer.Serialize(new TinyUpdateStockDataJson
         {
@@ -49,7 +49,7 @@ internal sealed class TinyStockClient
     /// Calls <c>produtos.atualizacoes.estoque.php</c>.
     /// Requires the "API para estoque em tempo real" extension on the Tiny account.
     /// </summary>
-    internal Task<TinyListStockUpdatesResponse> ListUpdatesAsync(ListStockUpdatesRequest request, CancellationToken ct)
+    public Task<TinyListStockUpdatesResponse> ListUpdatesAsync(ListStockUpdatesRequest request, CancellationToken ct)
     {
         var parameters = new List<KeyValuePair<string, string?>>
         {
