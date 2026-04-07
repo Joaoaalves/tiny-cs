@@ -15,7 +15,8 @@ internal sealed class TinyHttpClient
 
     private static readonly JsonSerializerOptions ResponseJsonOptions = new()
     {
-        PropertyNameCaseInsensitive = false
+        PropertyNameCaseInsensitive = false,
+        Converters = { new FlexibleStringConverter() }
     };
 
     internal static readonly JsonSerializerOptions RequestJsonOptions = new()
