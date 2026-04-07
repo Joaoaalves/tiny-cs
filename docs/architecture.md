@@ -1,49 +1,84 @@
 # Architecture
 
-## Overview
+## Package layout
 
-The library is split into two packages that follow a clean separation of contracts and implementation.
+The library is split into two packages with a strict dependency direction:
 
 ```
-Joaoaalves.Tiny.Abstractions   (contracts — no dependencies)
+Joaoaalves.Tiny.Abstractions   (contracts — zero dependencies)
          ↑
-Joaoaalves.Tiny.Core           (implementation — depends on Abstractions)
+Joaoaalves.Tiny.Core           (implementation — depends on Abstractions only)
 ```
+
+`Abstractions` never references `Core`. This allows consumers to depend solely on `Abstractions` when building adapters, mocks, or alternative implementations.
 
 ## Joaoaalves.Tiny.Abstractions
 
-Contains all domain types that define the shape of the Tiny API:
+Contains all public domain types:
 
-- **Entities** — plain C# classes mapping to Tiny domain objects (Product, Order, Contact, etc.)
-- **Interfaces** — service contracts (`ITinyProductService`, `ITinyOrderService`, etc.)
-- **DTOs** — request and response objects for each endpoint
-- **Enums** — Tiny status codes and type enumerations
+| Folder | Contents |
+|---|---|
+| `Entities/` | Read-only C# records returned by services |
+| `Interfaces/` | `ITinyProductService`, `ITinyOrderService`, `ITinyStockService` |
+| `DTOs/Requests/` | Input objects passed to service methods |
+| `Enums/` | Typed representations of Tiny API codes |
 
-This package has no dependencies. Consumers who want to build their own implementations can depend solely on Abstractions.
+No NuGet dependencies. Target framework: `net10.0`.
 
 ## Joaoaalves.Tiny.Core
 
 Contains the concrete implementation:
 
-- **Http/** — `TinyHttpClient` wraps `HttpClient`, injects the API token, unwraps the Tiny response envelope, and maps API errors to `TinyApiException`
-- **Clients/** — one typed client per Tiny resource, mapping endpoints to method calls
-- **Services/** — high-level orchestration implementing the Abstractions interfaces
-- **Extensions/** — `IServiceCollection` extension for easy DI registration
+| Folder | Contents |
+|---|---|
+| `Http/` | `TinyHttpClient`, `TinyOptions`, `TinyApiException`, `FlexibleStringConverter` |
+| `Clients/` | `TinyProductClient`, `TinyOrderClient`, `TinyStockClient` |
+| `Services/` | `TinyProductService`, `TinyOrderService`, `TinyStockService` |
+| `Mappers/` | `ProductMapper`, `OrderMapper`, `StockMapper` |
+| `Extensions/` | `TinyServiceCollectionExtensions.AddTiny(…)` |
 
-## HTTP Contract
+Dependencies: `Microsoft.Extensions.Http`, `Microsoft.Extensions.DependencyInjection.Abstractions`.
 
-All Tiny API V2 requests are HTTP POST with `Content-Type: application/x-www-form-urlencoded`.
-The `format=json` parameter is always included.
-Authentication is via `?token={apiToken}` appended to the URL.
+## Request flow
 
-Response envelope shape:
+```
+Consumer
+  → ITinyXxxService          (Abstractions interface)
+    → TinyXxxService         (orchestrates and maps)
+      → TinyXxxClient        (builds parameters, calls HTTP)
+        → TinyHttpClient     (injects token, unwraps envelope)
+          → HttpClient       (provided by IHttpClientFactory)
+```
+
+## Tiny API V2 HTTP contract
+
+Every call is an **HTTP POST**. No request body is ever sent — all parameters travel in the URL query string, even for write operations. This is an intentional (if unusual) design of Tiny API V2.
+
+```
+POST https://api.tiny.com.br/api2/produto.obter.php
+     ?token=<apiToken>
+     &formato=json
+     &id=123456789
+```
+
+Response envelope:
 
 ```json
 {
   "retorno": {
+    "status_processamento": "3",
     "status": "OK",
-    "codigo_status": 200,
-    "codigo_mensagem": "..."
+    "produto": { ... }
   }
 }
 ```
+
+When `status` is not `"OK"`, `TinyHttpClient` throws `TinyApiException` containing the error details.
+
+## JSON quirks
+
+Tiny API V2 returns numeric fields inconsistently — the same field may arrive as a JSON string `"1"` or a JSON number `1` depending on the endpoint and account configuration. The library handles this transparently via `FlexibleStringConverter`, which accepts any scalar JSON token into a `string?` DTO field without requiring changes to the callers.
+
+## Testing
+
+Unit tests mock `HttpMessageHandler` directly so the real `HttpClient` code path is exercised. Services are tested by mocking the typed client interfaces (`ITinyProductClient`, etc.). Integration tests (gated by `Category=Integration`) run against the live API using a token from the `TINY_TOKEN` environment variable, and are strictly read-only.
