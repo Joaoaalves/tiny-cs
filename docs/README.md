@@ -9,7 +9,7 @@ C# client library for the **Tiny ERP API V2** (Brazilian ERP).
 
 | Package | Description |
 |---|---|
-| `Joaoaalves.Tiny` | HTTP clients and service implementations |
+| `Joaoaalves.Tiny.Core` | HTTP clients and service implementations |
 | `Joaoaalves.Tiny.Abstractions` | Entities, interfaces, DTOs, and enums |
 
 ## Quick start
